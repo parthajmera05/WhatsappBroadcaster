@@ -12,11 +12,14 @@ df = pd.read_excel(excel_file)
 
 # Set up Chrome options with your existing profile (macOS path)
 options = Options()
-options.add_argument("user-data-dir=/Users/parthajmera/Library/Application Support/Google/Chrome")  # Root user data dir
-options.add_argument("--profile-directory=Default")  # 'Default' is the profile folder name
+# options.add_argument("user-data-dir=/Users/parthajmera/Library/Application Support/Google/Chrome")  # Root user data dir
+# options.add_argument("--profile-directory=Default")
+options.add_argument(r"user-data-dir=C:\SeleniumProfile")  # Use the custom profile
+options.add_argument("--profile-directory=Default")  # Default inside the custom dir
+options.add_experimental_option("detach", True)  # Optional: Keep window open after script ends
 
 # Path to your ChromeDriver (replace with actual path if different)
-service = Service(os.path.abspath("chromedriver"))  # or wherever your chromedriver is installed
+service = Service(executable_path="chromedriver.exe") # or wherever your chromedriver is installed
 
 # Start the driver
 driver = webdriver.Chrome(service=service, options=options)
@@ -24,29 +27,12 @@ driver = webdriver.Chrome(service=service, options=options)
 # Function to send WhatsApp message
 def send_whatsapp_message(phone, message):
     print(f"Sending to {phone}...")
-    url = f"https://wa.me/{phone}?text={message}"
+    url = f"https://web.whatsapp.com/send?phone={phone}&text={message}"
     driver.get(url)
-    time.sleep(8)
-
-    try:
-        # Click 'Continue to Chat' if it appears
-        continue_btn = driver.find_element(By.XPATH, '//a[@role="button"]//span[contains(text(),"Continue to Chat")]')
-        continue_btn.click()
-        time.sleep(5)
-    except:
-        pass
-
-    try:
-        # Click 'Use WhatsApp Web' if prompted
-        use_web = driver.find_element(By.LINK_TEXT, "use WhatsApp Web")
-        use_web.click()
-        time.sleep(5)
-    except:
-        pass
+    time.sleep(10)  # Wait for WhatsApp Web to load
 
     try:
         # Wait for chat to open and click send
-        time.sleep(10)
         send_button = driver.find_element(By.XPATH, '//button[@aria-label="Send"]')
         send_button.click()
         print(f"✅ Message sent to {phone}")
@@ -55,7 +41,7 @@ def send_whatsapp_message(phone, message):
 
 # Loop through all contacts and send messages
 for index, row in df.iterrows():
-    phone = str(row['Phone Number']).strip()
+    phone = str(row['Phone']).strip()
     message = "Hi, This is a Test Message"
     send_whatsapp_message(phone, message)
     time.sleep(10)  # Delay to avoid spam detection
