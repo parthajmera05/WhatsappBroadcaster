@@ -83,3 +83,5 @@ message_entry.pack(pady=5)
 tk.Button(root, text="Send Messages", command=send_messages, bg="green", fg="white", height=2, width=20).pack(pady=20)
 
 root.mainloop()
+
+#chrome.exe --user-data-dir="C:\SeleniumProfile" --profile-directory="Default"
